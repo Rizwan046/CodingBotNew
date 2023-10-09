@@ -7,3 +7,4 @@ a=10;
 b=15;
 cout<< a+b;
 }
+//this is simple program
