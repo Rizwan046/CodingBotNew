@@ -1,0 +1,106 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+// Define a model class (e.g., for a hypothetical entity)
+public class Customer
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    // Other properties...
+}
+
+// Define a repository interface
+public interface IRepository<T>
+{
+    T GetById(int id);
+    IEnumerable<T> GetAll();
+    void Add(T entity);
+    void Update(T entity);
+    void Delete(int id);
+}
+
+// Implement the repository using a List as an in-memory data store
+public class CustomerRepository : IRepository<Customer>
+{
+    private List<Customer> customers = new List<Customer>();
+
+    public Customer GetById(int id)
+    {
+        return customers.FirstOrDefault(c => c.Id == id);
+    }
+
+    public IEnumerable<Customer> GetAll()
+    {
+        return customers;
+    }
+
+    public void Add(Customer entity)
+    {
+        if (entity == null)
+        {
+            throw new ArgumentNullException(nameof(entity));
+        }
+
+        customers.Add(entity);
+    }
+
+    public void Update(Customer entity)
+    {
+        if (entity == null)
+        {
+            throw new ArgumentNullException(nameof(entity));
+        }
+
+        var existingCustomer = GetById(entity.Id);
+        if (existingCustomer != null)
+        {
+            existingCustomer.Name = entity.Name;
+            // Update other properties as needed...
+        }
+    }
+
+    public void Delete(int id)
+    {
+        var customerToRemove = GetById(id);
+        if (customerToRemove != null)
+        {
+            customers.Remove(customerToRemove);
+        }
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Create an instance of the repository
+        var customerRepository = new CustomerRepository();
+
+        // Add some customers
+        customerRepository.Add(new Customer { Id = 1, Name = "John Doe" });
+        customerRepository.Add(new Customer { Id = 2, Name = "Jane Smith" });
+
+        // Get a customer by ID
+        var customer = customerRepository.GetById(1);
+        if (customer != null)
+        {
+            Console.WriteLine($"Customer ID: {customer.Id}, Name: {customer.Name}");
+        }
+
+        // List all customers
+        var allCustomers = customerRepository.GetAll();
+        foreach (var c in allCustomers)
+        {
+            Console.WriteLine($"Customer ID: {c.Id}, Name: {c.Name}");
+        }
+
+        // Update a customer
+        customerRepository.Update(new Customer { Id = 1, Name = "Updated Name" });
+
+        // Delete a customer
+        customerRepository.Delete(2);
+
+        Console.ReadLine();
+    }
+}
