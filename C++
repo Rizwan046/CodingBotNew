@@ -6,3 +6,4 @@ int a,b;
 a=10;
 b=15;
 cout<< a+b;
+}
